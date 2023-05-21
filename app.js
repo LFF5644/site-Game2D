@@ -13,11 +13,11 @@ const model={
 			pos_y: 0,
 			size_height: 16*4,
 			size_width: 23*4,
-			step: 10,
+			step: 30,
 		},
 		game:{
-			height: 500,
-			width: 500,
+			height: 300,
+			width: 300,
 		},
 	}),
 	set: (state,key,value)=>({
@@ -32,6 +32,25 @@ const model={
 		},
 	}),
 };
+
+function getWidth() {
+	return Math.max(
+		document.body.scrollWidth,
+		document.documentElement.scrollWidth,
+		document.body.offsetWidth,
+		document.documentElement.offsetWidth,
+		document.documentElement.clientWidth
+	);
+}
+function getHeight() {
+	return Math.max(
+		document.body.scrollHeight,
+		document.documentElement.scrollHeight,
+		document.body.offsetHeight,
+		document.documentElement.offsetHeight,
+		document.documentElement.clientHeight
+	);
+}
 
 init(()=>{
 	const [state,actions]=hook_model(model);
@@ -66,6 +85,14 @@ init(()=>{
 				if(playerPosition_y-playerStep<0) actions.setKey("player","pos_y",0);
 				else actions.setKey("player","pos_y",playerPosition_y-playerStep);
 			}
+		},
+		onresize:()=>{
+			actions.setKey("game","height",getHeight());
+			actions.setKey("game","width",getWidth());
+		},
+		onload:()=>{
+			actions.setKey("game","height",getHeight());
+			actions.setKey("game","width",getWidth());
 		},
 	},[
 		node_dom("div[className=game]",{
