@@ -1,3 +1,5 @@
+const path="/p/Game2D/";
+
 const {
 	hook_model,
 	init,
@@ -6,21 +8,79 @@ const {
 
 const model={
 	init:()=>({
-		// put some variables here!
+		player:{
+			pos_x: 0,
+			pos_y: 0,
+			size_height: 16*4,
+			size_width: 23*4,
+			step: 10,
+		},
+		game:{
+			height: 500,
+			width: 500,
+		},
 	}),
 	set: (state,key,value)=>({
 		...state,
 		[key]: value,
 	}),
+	setKey: (state,key,keySet,value)=>({
+		...state,
+		[key]:{
+			...state[key],
+			[keySet]: value,
+		},
+	}),
 };
 
 init(()=>{
 	const [state,actions]=hook_model(model);
-	return[null,[
-		node_dom("h1[innerText=Template]"),
-		node_dom("p",null,[
-			node_dom("button[innerText=Go Back]",{
-				onclick:()=> history.back(),
+
+	document.title=`x:${state.player.pos_x} y:${state.player.pos_y}`;
+
+	return[{
+		onkeydown: event=>{
+			const char=event.key;
+
+			const game_height=state.game.height;
+			const game_width=state.game.width;
+			const player_height=state.player.size_height;
+			const player_width=state.player.size_width;
+			const playerPosition_x=state.player.pos_x;
+			const playerPosition_y=state.player.pos_y;
+			const playerStep=state.player.step;
+
+			if(char==="ArrowDown"){
+				if(playerPosition_y+playerStep>game_height-player_height) actions.setKey("player","pos_y",game_height-player_height);
+				else actions.setKey("player","pos_y",playerPosition_y+playerStep);
+			}
+			else if(char==="ArrowLeft"){
+				if(playerPosition_x-playerStep<0) actions.setKey("player","pos_x",0);
+				else actions.setKey("player","pos_x",playerPosition_x-playerStep);
+			}
+			else if(char==="ArrowRight"){
+				if(playerPosition_x+playerStep>game_width-player_width) actions.setKey("player","pos_x",game_width-player_width);
+				else actions.setKey("player","pos_x",playerPosition_x+playerStep);
+			}
+			else if(char==="ArrowUp"){
+				if(playerPosition_y-playerStep<0) actions.setKey("player","pos_y",0);
+				else actions.setKey("player","pos_y",playerPosition_y-playerStep);
+			}
+		},
+	},[
+		node_dom("div[className=game]",{
+			S:{
+				height: state.game.height+"px",
+				width: state.game.width+"px",
+			},
+		},[
+			node_dom("img[src="+path+"/player.png][className=player]",{
+				height: state.player.size_height,
+				width: state.player.size_width,
+				S:{
+					left: state.player.pos_x+"px",
+					top: state.player.pos_y+"px",
+				},
 			}),
 		]),
 	]];
